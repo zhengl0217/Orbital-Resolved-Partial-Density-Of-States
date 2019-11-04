@@ -1,6 +1,6 @@
 import numpy as np
 import re
-from pymatgen import MPRester, Composition, Structure
+from pymatgen import MPRester
 
 def pdos(dos):
     """Extract projected density of state arrays from the doc file and save them into library file. 
@@ -48,16 +48,13 @@ def pdos(dos):
     
         return pdos_dict
 
-
-m = MPRester('## API key ###')
-oxide = 'CaTiO3'
-properties = ["material_id", "spacegroup", "pretty_formula"]
-data = m.query(oxide, properties)
-for entry in data:
-    spacegroup = entry['spacegroup']['crystal_system']
-    material_id = entry['material_id']
-    if spacegroup == 'cubic':
-        formula = entry['pretty_formula']
-        dos = m.get_dos_by_material_id(material_id)
-        partial_dos = pdos(dos)
-        print('partial_dos', partial_dos)
+if __name__ == "__main__":
+    m = MPRester('## API key ###')
+    data = m.query('CaTiO3', ["material_id", "spacegroup", "pretty_formula"])
+    for entry in data:
+        material_id = entry['material_id']
+        spacegroup = entry['spacegroup']['crystal_system']
+        if spacegroup == 'cubic':
+            dos = m.get_dos_by_material_id(material_id)
+            partial_dos = pdos(dos)
+            print('partial_dos', partial_dos)
