@@ -1,8 +1,6 @@
-#!/usr/bin/env python
 import numpy as np
 import re
 from pymatgen import MPRester, Composition, Structure
-import matplotlib.pyplot as plt
 
 def pdos(dos):
     """Extract projected density of state arrays from the doc file and save them into library file. 
@@ -50,54 +48,16 @@ def pdos(dos):
     
         return pdos_dict
 
-properties = ['task_id', "energy", "energy_per_atom", "volume",
-                            "formation_energy_per_atom", "nsites",
-                            "unit_cell_formula", "pretty_formula",
-                            "is_hubbard", "elements", "nelements",
-                            "e_above_hull", "hubbards", "is_compatible",
-                            "spacegroup", "task_ids", "band_gap", "density",
-                            "icsd_id", "icsd_ids", "cif", "total_magnetization",
-                            "material_id", "oxide_type", "tags", "elasticity"]
 
-#oxide = 'CaTiO3'
-#oxide = 'SrNiO3'
-#oxide = 'SrAgO3'
-#oxide = 'LaCoO3'
-#oxide = 'SrMnO3'
-oxide = 'BaCoO3'
-#oxide = 'LaFeO3'
-#oxide = 'LaCuO3'
-m = MPRester('FfPyT6VLIvhlRE9c')
-data = m.query('BaRhO3', properties)
+m = MPRester('## API key ###')
+oxide = 'CaTiO3'
+properties = ["material_id", "spacegroup", "pretty_formula"]
+data = m.query(oxide, properties)
 for entry in data:
     spacegroup = entry['spacegroup']['crystal_system']
-    print('spacegroup', spacegroup)
     material_id = entry['material_id']
-    #if material_id == mp-2723:
-    if spacegroup == 'cubic':#'hexagonal':#'cubic':
-        try:
-            formula = entry['pretty_formula']
-            dos = m.get_dos_by_material_id(material_id)
-            lib = pdos(dos)
-            lib_dos = sum(lib.values())
-            efermi = dos.efermi                                                                                                               
-            print('efermi', efermi)                                                                                                        
-            energies = dos.energies                                                                                                        
-        except:
-            continue
-
-densities = sum(dos.densities.values())                
-densities_d = (lib['Orbital.dz2']+ lib['Orbital.dx2']+ lib['Orbital.dxy']+ lib['Orbital.dxz']+ lib['Orbital.dyz'])
-densities_p = (lib['Orbital.px'] + lib['Orbital.py'] + lib['Orbital.pz'])
-densities_s = lib['Orbital.s']
-densities_tot = densities_d + densities_p + densities_s
-plt.plot(densities, energies-efermi, c='grey', label = 'total')
-plt.plot(densities_d, energies-efermi, c='b', label= 'd')
-plt.plot(densities_s, energies-efermi, c='g', label= 's')
-plt.plot(densities_p, energies-efermi, c='r', label= 'p')
-#plt.plot(densities, energies-efermi, c='k', label = 'total_model')                                                                
-plt.xlim(0, 0.5)
-plt.ylim(-10, 20)
-plt.legend()
-plt.title(formula + ',' +spacegroup)
-plt.show()
+    if spacegroup == 'cubic':
+        formula = entry['pretty_formula']
+        dos = m.get_dos_by_material_id(material_id)
+        partial_dos = pdos(dos)
+        print('partial_dos', partial_dos)
