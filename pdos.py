@@ -1,6 +1,13 @@
+"""
+This module defines a function to extract orbital resolved partial density of states from Materials Project.
+"""
 import numpy as np
 import re
 from pymatgen import MPRester
+
+__author__ = "Zheng Li"
+__email__ = "zhengl@vt.edu"
+__date__ = "Nov. 4, 2019"
 
 def pdos(dos):
     """Extract projected density of state arrays from the doc file and save them into library file. 
