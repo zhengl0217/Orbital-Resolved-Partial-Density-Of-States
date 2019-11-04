@@ -1,5 +1,5 @@
 """
-This module defines a function to extract orbital resolved partial density of states from Materials Project.
+This module defines a function to extract orbital resolved partial density of states(pdos) from Materials Project.
 """
 import numpy as np
 import re
@@ -28,9 +28,8 @@ def pdos(dos):
         # initialize the pdos_dict with 0 for each orbital
         pdos_dict = {}
         for item in orbital_list:
-            pdos_dict[item] = np.zeros(len(dos.energies))
-        # search all the orbital-resolved partial density of states and calculate the sum    
-        # for density of states with spin unpolarized calculations (1 spin chanel)
+            pdos_dict[item] = np.zeros(len(dos.energies))  
+        # for density of states with spin unpolarized calculations (1 spin chanel), sum all the pdos.
         if 'Spin.up' in pdos[-1]:
             print('spin unpolarized calculation')
             for orbital in orbital_list:
@@ -39,7 +38,7 @@ def pdos(dos):
                 orbital_array = np.array([[float(x) for x in item[item.index('[')+1:item.index(']')].split(',')] for item in orbital_str])
                 orbital_sum = orbital_array.sum(axis=0)
                 pdos_dict[orbital] = orbital_sum
-        # for density of states with spin polarized calculations (2 spin channels)
+        # for density of states with spin polarized calculations (2 spin channels), sum all the pdos (up and down channels).
         if 'Spin.down' in pdos[-1]:
             print('spin polarized calculation')
             for orbital in orbital_list:
@@ -52,7 +51,6 @@ def pdos(dos):
                 orbital_array = np.concatenate((orbital_array_up, orbital_array_down), axis=0)
                 orbital_sum = orbital_array.sum(axis=0)
                 pdos_dict[orbital] = orbital_sum
-    
         return pdos_dict
 
 if __name__ == "__main__":
