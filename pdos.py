@@ -13,7 +13,6 @@ def pdos(dos):
     """Extract projected density of state arrays from the doc file and save them into library file. 
     Args:
        dos (doc): doc
-       size (int): number of energy levels for the specific material electronic structure 
     Returns:
        dict: library of pdos arrays obtained by summing all the atomic pdos 
     """
